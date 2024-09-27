@@ -9,7 +9,7 @@ const WalletProvider = ({ children }) => {
     <AptosWalletAdapterProvider
       optInWallets={["Mizu Wallet"]}
       dappConfig={{
-        aptosConnectDappId: "", // Add your DApp ID if applicable
+        aptosConnectDappId: "440423fe-0ee3-4446-9297-26530dc57eea", // Add your DApp ID if applicable
         network: Network.TESTNET,
         mizuwallet: {
           manifestURL: manifestURL,

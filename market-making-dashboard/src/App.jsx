@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import WalletProvider from './components/WalletProvider';
 import TradeHistory from './components/TradeHistory';
 import MarketMakingToggle from './components/MarketMakingToggle';
@@ -10,11 +10,9 @@ import AccountBalance from './components/AccountBalance';
 import HealthCheck from './components/HealthCheck';
 import MizuWalletConnection from './components/MizuWalletConnection';
 import { Container, Typography, Box } from '@mui/material';
+import TransactionHandler from './components/TransactionHandler'; // Import the new component
 
 function App() {
-  const address = 'your-valid-address'; // Replace with a valid address
-  const marketId = 'your-valid-market-id'; // Replace with a valid market ID
-
   return (
     <WalletProvider>
       <Container sx={{ maxWidth: '100vw', height: '100vh', padding: '20px', position: 'relative' }}>
@@ -40,19 +38,23 @@ function App() {
         </Box>
 
         <Box sx={{ marginTop: '40px' }}>
-          <ViewPositions address={address} marketId={marketId} />
+          <ViewPositions marketId={36} />
         </Box>
 
         <Box sx={{ marginTop: '40px' }}>
-          <PlaceOrder marketId={marketId} />
+          <PlaceOrder marketId={36} />
         </Box>
 
         <Box sx={{ marginTop: '40px' }}>
-          <AccountBalance />
+          <AccountBalance /> {/* No need to pass address anymore */}
         </Box>
 
         <Box sx={{ marginTop: '40px' }}>
-          <MizuWalletConnection />
+          <MizuWalletConnection /> {/* No need to pass setAddress */}
+        </Box>
+
+        <Box sx={{ marginTop: '40px' }}>
+          <TransactionHandler /> {/* Add the TransactionHandler component */}
         </Box>
       </Container>
     </WalletProvider>

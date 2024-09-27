@@ -9,5 +9,8 @@ export default defineConfig({
       'chunk-WXTH2UMW.js',
       'chunk-ZMB5PWZ4.js'
     ]
+  },
+  build: {
+    outDir: 'dist' // Specify the output directory for the build
   }
 })
