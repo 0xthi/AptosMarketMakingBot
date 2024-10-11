@@ -21,14 +21,14 @@ const APIHealth: React.FC = () => {
 
         // Optional toast notifications
         if (newStatus === 'OK') {
-          toast({ title: "API is healthy!", description: "All systems operational.", variant: "success" });
+          toast({ title: "API is healthy!", description: "All systems operational.", variant: "default" }); // Changed "success" to "default"
         } else {
-          toast({ title: "API is down!", description: "Please check the service.", variant: "error" });
+          toast({ title: "API is down!", description: "Please check the service.", variant: "destructive" });
         }
       } catch (error) {
         console.error('Error fetching health status:', error);
         setStatus('ERROR');
-        toast({ title: "Error fetching health status!", description: "Please try again later.", variant: "error" });
+        toast({ title: "Error fetching health status!", description: "Please try again later.", variant: "destructive" });
       }
     };
 
