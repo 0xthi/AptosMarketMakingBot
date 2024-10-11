@@ -1,5 +1,5 @@
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
-import "./globals.css";
+import "./globals.css"; // Correctly imports globals.css from the src directory
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { WalletProvider } from "@/components/WalletProvider";
@@ -24,6 +24,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Link to the favicon */}
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body
         className={cn(
           "flex justify-center min-h-screen bg-background font-sans antialiased",
