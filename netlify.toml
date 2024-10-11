@@ -1,3 +1,2 @@
 [build]
-  command = "npm install --legacy-peer-deps && npm run build"
-  publish = "dist" # Replace with your actual build directory
+  command = "npm run build"
