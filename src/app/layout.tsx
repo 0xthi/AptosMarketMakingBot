@@ -24,10 +24,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Link to the favicon */}
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <body
         className={cn(
           "flex justify-center min-h-screen bg-background font-sans antialiased",
