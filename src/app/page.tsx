@@ -4,6 +4,8 @@ import { useAutoConnect } from "@/components/AutoConnectProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WalletSelector as ShadcnWalletSelector } from "@/components/WalletSelector";
 import { SingleSigner } from "@/components/transactionFlows/SingleSigner";
+import { Deposit } from "@/components/transactionFlows/Deposit";
+import { MarketOrder } from "@/components/transactionFlows/MarketOrder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import HealthCheck from "@/components/transactionFlows/APIHealth"; 
 import AccountBalance from "@/components/tradeDashboard/AccountBalance";
@@ -53,6 +55,12 @@ export default function Home() {
       <WalletSelection />
       {connected && (
         <SingleSigner />
+      )}
+      {connected && (
+        <Deposit />
+      )}
+      {connected && (
+        <MarketOrder />
       )}
       {connected && isMainnet(connected, network?.name) && (
         <Alert variant="warning">
