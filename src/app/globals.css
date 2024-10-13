@@ -74,3 +74,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  text-align: left; /* Default alignment for headers */
+}
+
+.table td {
+  text-align: center; /* Default alignment for cells */
+}

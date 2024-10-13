@@ -8,9 +8,7 @@ import { TransactionHash } from "../TransactionHash";
 import { useState } from "react"; // Add this import
 import axios from 'axios'; // Add axios for API calls
 
-const MARKET_ID = 47; // Set marketId as 47
-
-export function MarketOrder() { // Create MarketOrder component
+export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fetchBalances: () => void }) { // Accept marketId as a prop
   const { toast } = useToast();
   const {
     connected,
@@ -30,7 +28,7 @@ export function MarketOrder() { // Create MarketOrder component
     if (!account) return; // Check for account
 
     // Construct the API URL
-    const apiUrl = `https://perps-tradeapi.kanalabs.io/marketOrder/?marketId=${MARKET_ID}&tradeSide=${tradeSide}&direction=${direction}&size=${size}&leverage=${leverage}`;
+    const apiUrl = `https://perps-tradeapi.kanalabs.io/marketOrder/?marketId=${marketId}&tradeSide=${tradeSide}&direction=${direction}&size=${size}&leverage=${leverage}`;
 
     // Fetch market order payload from API
     const response = await axios.get(apiUrl);
@@ -52,6 +50,7 @@ export function MarketOrder() { // Create MarketOrder component
         title: "Success",
         description: <TransactionHash hash={response.hash} network={network} />,
       });
+      fetchBalances(); // Refresh balances after successful transaction
     } catch (error) {
       console.error(error);
     }

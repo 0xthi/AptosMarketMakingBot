@@ -8,9 +8,7 @@ import { TransactionHash } from "../TransactionHash";
 import { useState } from "react"; // Add this import
 import axios from 'axios'; // Add axios for API calls
 
-const MARKET_ID = 47; // Set marketId as 47
-
-export function Deposit() { // Change function name to Deposit
+export function Deposit({ marketId, fetchBalances }: { marketId: number; fetchBalances: () => void }) { // Accept marketId as a prop
   const { toast } = useToast();
   const {
     connected,
@@ -27,7 +25,7 @@ export function Deposit() { // Change function name to Deposit
     const totalAmount = amount * 100000000; // Multiply amount by 100000000
 
     // Fetch deposit payload from API
-    const response = await axios.get(`https://perps-tradeapi.kanalabs.io/deposit/?marketId=${MARKET_ID}&amount=${totalAmount}`);
+    const response = await axios.get(`https://perps-tradeapi.kanalabs.io/deposit/?marketId=${marketId}&amount=${totalAmount}`);
     const depositPayload = response.data.data; // Extract deposit payload
 
     const transaction: InputTransactionData = {
@@ -46,6 +44,7 @@ export function Deposit() { // Change function name to Deposit
         title: "Success",
         description: <TransactionHash hash={response.hash} network={network} />,
       });
+      fetchBalances(); // Refresh balances after successful transaction
     } catch (error) {
       console.error(error);
     }

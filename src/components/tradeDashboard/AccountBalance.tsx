@@ -15,40 +15,43 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({ marketId, baseDecimals 
   const [aptBalance, setAptBalance] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBalances = async () => {
-      if (!account) return;
+  const fetchBalances = async () => {
+    if (!account) return;
 
-      try {
-        const tradingResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getTradingAccountBalance?marketId=${marketId}&address=${account.address}`);
-        const tradingData = await tradingResponse.json();
-        if (tradingData.status) {
-          setTradingBalance(tradingData.data);
-        } else {
-          setError(tradingData.message);
-        }
-
-        const walletResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getWalletAccountBalance?marketId=${marketId}&address=${account.address}`);
-        const walletData = await walletResponse.json();
-        if (walletData.status) {
-          setWalletBalance(walletData.data);
-        } else {
-          setError(walletData.message);
-        }
-
-        const aptResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getAccountAptBalance?marketId=${marketId}&address=${account.address}`);
-        const aptData = await aptResponse.json();
-        if (aptData.status) {
-          setAptBalance(aptData.data);
-        } else {
-          setError(aptData.message);
-        }
-      } catch (error) {
-        console.error('Error fetching account balances:', error);
-        setError('Error fetching account balances');
+    try {
+      const tradingResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getTradingAccountBalance?marketId=${marketId}&address=${account.address}`);
+      const tradingData = await tradingResponse.json();
+      if (tradingData.status) {
+        setTradingBalance(tradingData.data / 1000000); // Divide by 1,000,000 for USDC
+      } else {
+        setTradingBalance(0); // Set balance to 0 on error
+        setError(tradingData.message);
       }
-    };
 
+      const walletResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getWalletAccountBalance?marketId=${marketId}&address=${account.address}`);
+      const walletData = await walletResponse.json();
+      if (walletData.status) {
+        setWalletBalance(walletData.data / 1000000); // Divide by 1,000,000 for USDC
+      } else {
+        setWalletBalance(0); // Set balance to 0 on error
+        setError(walletData.message);
+      }
+
+      const aptResponse = await fetch(`https://perps-tradeapi.kanalabs.io/getAccountAptBalance?marketId=${marketId}&address=${account.address}`);
+      const aptData = await aptResponse.json();
+      if (aptData.status) {
+        setAptBalance(aptData.data / 100000000); // Divide by 100,000,000 for Aptos balance
+      } else {
+        setAptBalance(0); // Set balance to 0 on error
+        setError(aptData.message);
+      }
+    } catch (error) {
+      console.error('Error fetching account balances:', error);
+      setError('Error fetching account balances');
+    }
+  };
+
+  useEffect(() => {
     fetchBalances();
   }, [account, marketId]);
 
@@ -58,8 +61,12 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({ marketId, baseDecimals 
 
   const formatBalance = (balance: number | null) => {
     if (balance === null) return 'Loading...';
-    const dividedValue = balance / Math.pow(10, baseDecimals);
-    return Math.round(dividedValue * 100) / 100; // Round to 2 decimal places
+    return Math.round(balance * 100) / 100; // Round to 2 decimal places
+  };
+
+  const formatAptBalance = (balance: number | null) => {
+    if (balance === null) return 'Loading...';
+    return balance.toFixed(4); // 4 decimal places for Aptos balance
   };
 
   return (
@@ -70,13 +77,13 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({ marketId, baseDecimals 
       <CollapsibleContent>
         {error && <Typography color="error">{error}</Typography>}
         <Typography variant="body1">
-          Trading Account Balance: {formatBalance(tradingBalance)}
+          Trading Account Balance (USDC): {formatBalance(tradingBalance)}
         </Typography>
         <Typography variant="body1">
-          Wallet Account Balance: {formatBalance(walletBalance)}
+          Wallet Account Balance (USDC): {formatBalance(walletBalance)}
         </Typography>
         <Typography variant="body1">
-          Aptos Account Balance: {formatBalance(aptBalance)}
+          Wallet Account Balance (Aptos): {formatAptBalance(aptBalance)}
         </Typography>
       </CollapsibleContent>
     </Collapsible>

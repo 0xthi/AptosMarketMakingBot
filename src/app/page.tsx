@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { WalletSelector as ShadcnWalletSelector } from "@/components/WalletSelector";
 import { SingleSigner } from "@/components/transactionFlows/SingleSigner";
 import { Deposit } from "@/components/transactionFlows/Deposit";
+import { Withdraw } from "@/components/transactionFlows/Withdraw";
 import { MarketOrder } from "@/components/transactionFlows/MarketOrder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import HealthCheck from "@/components/transactionFlows/APIHealth"; 
@@ -16,6 +17,7 @@ import { AlertCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import OrderHistory from "@/components/tradeDashboard/OrderHistory"; // Import the OrderHistory component
 
 export default function Home() {
   const { connected, network } = useWallet();
@@ -46,21 +48,31 @@ export default function Home() {
     fetchMarketInfo();
   }, []);
 
+  // Function to fetch balances, to be passed to Deposit and MarketOrder
+  const fetchBalances = async () => {
+    // Implement the logic to fetch balances here
+    // This function should be defined to refresh balances after transactions
+  };
+
   return (
     <main className="flex flex-col w-full max-w-[1000px] p-4 md:p-6 pb-12 gap-6">
+      <Typography variant="h4" className="text-center mb-4">Market Making Bot</Typography>
       <div className="flex justify-between items-center pb-4">
         <ThemeToggle />
         <HealthCheck />
       </div>
       <WalletSelection />
-      {connected && (
+      {/* {connected && (
         <SingleSigner />
+      )} */}
+      {connected && marketId !== null && (
+        <Deposit marketId={marketId} fetchBalances={fetchBalances} />
       )}
-      {connected && (
-        <Deposit />
+      {connected && marketId !== null && (
+        <Withdraw marketId={marketId} fetchBalances={fetchBalances} />
       )}
-      {connected && (
-        <MarketOrder />
+      {connected && marketId !== null && (
+        <MarketOrder marketId={marketId} fetchBalances={fetchBalances} />
       )}
       {connected && isMainnet(connected, network?.name) && (
         <Alert variant="warning">
@@ -75,6 +87,9 @@ export default function Home() {
         <AccountBalance marketId={marketId} baseDecimals={baseDecimals} />
       )}
       {error && <Typography color="error">{error}</Typography>}
+      {connected && marketId !== null && (
+        <OrderHistory marketId={marketId} /> // Add OrderHistory component
+      )}
     </main>
   );
 }

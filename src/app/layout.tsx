@@ -16,9 +16,9 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Aptos Wallet Adapter Example",
+  title: "Aptos Market Making Bot",
   description:
-    "An example of how to use Aptos Wallet Adapter with React and Next.js.",
+    "Automated Market Making Bot using perpetual dex API of Kana Labs",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
