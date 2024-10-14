@@ -17,8 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import OrderHistory from "@/components/tradeDashboard/OrderHistory"; // Import the OrderHistory component
-import OpenTrades from "@/components/tradeDashboard/OpenTrades"; // Import the OpenTrades component
 import TradingChart from "@/components/tradeDashboard/TradingChart"; // Import the TradingChart component
+import axios from 'axios'; // Import axios
 
 export default function Home() {
   const { connected, network } = useWallet();
@@ -54,6 +54,40 @@ export default function Home() {
     // Implement the logic to fetch balances here
     // This function should be defined to refresh balances after transactions
   };
+
+  // Function to send a message to Telegram
+  const sendTelegramMessage = async () => {
+    const token = process.env.NEXT_PUBLIC_TOKEN_ID; // Access the bot token from environment variables
+    const chatId = process.env.NEXT_PUBLIC_CHAT_ID; // Access the chat ID from environment variables
+    const webAppUrl = 'https://aptos-market-making-bot.vercel.app/'; // Your web app URL
+
+    const message = {
+      chat_id: chatId,
+      text: 'Click the button to open the web app:',
+      reply_markup: {
+        inline_keyboard: [[
+          {
+            text: 'Open DEX bot',
+            web_app: { url: webAppUrl }
+          }
+        ]]
+      }
+    };
+
+    try {
+      const response = await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, message);
+      console.log('Message sent:', response.data);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+
+  // Call sendTelegramMessage when the component mounts or based on a specific event
+  useEffect(() => {
+    if (connected) {
+      sendTelegramMessage(); // Call this function when the user connects
+    }
+  }, [connected]);
 
   return (
     <main className="flex flex-col w-full max-w-[1000px] p-4 md:p-6 pb-12 gap-4">
