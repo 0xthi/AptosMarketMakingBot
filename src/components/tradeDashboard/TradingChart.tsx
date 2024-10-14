@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card"; // Import Card components
 
 declare global {
   interface Window {
@@ -32,9 +33,14 @@ const TradingChart: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <div id="tradingview_chart" style={{ width: '100%', height: '400px' }} />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle style={{ textAlign: 'center' }}>Trading Chart</CardTitle> {/* Center the title */}
+      </CardHeader>
+      <CardContent>
+        <div id="tradingview_chart" style={{ width: '100%', height: '400px' }} />
+      </CardContent>
+    </Card>
   );
 };
 

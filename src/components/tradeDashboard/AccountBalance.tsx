@@ -34,7 +34,7 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({ marketId, baseDecimals 
         setTradingBalance(tradingData.data / 1000000);
       } else {
         setTradingBalance(0);
-        setError(tradingData.message);
+        // Removed error state update for frontend display
         toast({
           title: "Error",
           description: tradingData.message,
@@ -72,7 +72,7 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({ marketId, baseDecimals 
     } catch (error: any) {
       console.error('Error fetching account balances:', error);
       const errorMessage = error.response?.data?.message || 'Error fetching account balances';
-      setError(errorMessage);
+      // Removed error state update for frontend display
       toast({
         title: "Error",
         description: errorMessage,

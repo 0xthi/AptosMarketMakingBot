@@ -56,7 +56,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ marketId }) => {
   return (
     <Card style={{ marginTop: '16px' }}>
       <CardHeader>
-        <Typography variant="h6">Order History</Typography>
+        <Typography variant="h6" style={{ textAlign: 'center' }}>Order History</Typography> {/* Center the title */}
       </CardHeader>
       <CardContent>
         {error && <Typography color="error">{error}</Typography>}
@@ -76,13 +76,17 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ marketId }) => {
               {orderHistory.map((order) => (
                 <TableRow key={order.order_id} style={{ display: 'flex' }}>
                   <TableCell style={{ flex: '1', textAlign: 'left' }}>{truncateOrderId(order.order_id)}</TableCell>
-                  <TableCell style={{ flex: '1', textAlign: 'center', color: order.direction === 'buy' ? 'green' : 'red' }}>
-                    {order.direction === 'buy' ? 'Buy' : 'Sell'}
+                  <TableCell style={{ flex: '1', textAlign: 'center', color: 
+                    order.direction === 'buy' || order.direction === 'bid' ? 'green' : 'red' }}>
+                    {order.direction === 'buy' ? 'Buy' : 
+                     order.direction === 'bid' ? 'Buy' : 
+                     order.direction === 'sell' ? 'Sell' : 
+                     order.direction === 'ask' ? 'Sell' : 'Unknown'}
                   </TableCell>
                   <TableCell style={{ flex: '1', textAlign: 'center' }}>{order.leverage}</TableCell>
                   <TableCell style={{ flex: '1', textAlign: 'right' }}>{order.total_filled}</TableCell>
                   <TableCell style={{ flex: '1', textAlign: 'right' }}>{(order.average_execution_price / 1000).toFixed(3)}</TableCell>
-                  <TableCell style={{ flex: '1', textAlign: 'center' }}>{order.type === 'limit' ? 'Limit' : 'Market'}</TableCell>
+                  <TableCell style={{ flex: '1', textAlign: 'center' }}>{order.order_type === 'limit' ? 'Limit' : 'Market'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

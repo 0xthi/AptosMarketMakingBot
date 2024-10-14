@@ -3,7 +3,6 @@
 import { useAutoConnect } from "@/components/AutoConnectProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WalletSelector as ShadcnWalletSelector } from "@/components/WalletSelector";
-import { SingleSigner } from "@/components/transactionFlows/SingleSigner";
 import { Deposit } from "@/components/transactionFlows/Deposit";
 import { Withdraw } from "@/components/transactionFlows/Withdraw";
 import { MarketOrder } from "@/components/transactionFlows/MarketOrder";
@@ -77,10 +76,9 @@ export default function Home() {
         <>
           <Deposit marketId={marketId} fetchBalances={fetchBalances} />
           <Withdraw marketId={marketId} fetchBalances={fetchBalances} />
+          <TradingChart />
           <MarketOrder marketId={marketId} fetchBalances={fetchBalances} />
           <OrderHistory marketId={marketId} />
-          <OpenTrades marketId={marketId} />
-          <TradingChart />
         </>
       )}
       {connected && isMainnet(connected, network?.name) && (
