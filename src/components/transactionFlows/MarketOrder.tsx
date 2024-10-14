@@ -5,10 +5,11 @@ import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { useToast } from "../ui/use-toast";
 import { TransactionHash } from "../TransactionHash";
-import { useState } from "react"; // Add this import
-import axios from 'axios'; // Add axios for API calls
+import { useState } from "react";
+import axios from 'axios';
+import { Slider } from "../ui/slider"; // Import the Slider component
 
-export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fetchBalances: () => void }) { // Accept marketId as a prop
+export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fetchBalances: () => void }) {
   const { toast } = useToast();
   const {
     connected,
@@ -18,41 +19,72 @@ export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fet
   } = useWallet();
   let sendable = isSendableNetwork(connected, network?.name);
 
-  // State variables for inputs
-  const [tradeSide, setTradeSide] = useState(true); // true for long side
-  const [direction, setDirection] = useState(false); // false for open position
-  const [size, setSize] = useState(1); // Size
-  const [leverage, setLeverage] = useState(20); // Leverage
+  const [tradeSide, setTradeSide] = useState(true);
+  const [direction, setDirection] = useState(false);
+  const [size, setSize] = useState(1);
+  const [leverage, setLeverage] = useState(20);
+  const [usdcDeposit, setUsdcDeposit] = useState(0);
+  const [amount, setAmount] = useState(0);
+
+  // Update amount based on USDC deposit and leverage
+  const updateAmount = (usdc: number, lev: number) => {
+    const newAmount = usdc * lev;
+    setAmount(newAmount);
+  };
+
+  // Handle USDC deposit change
+  const handleUsdcChange = (value: number) => {
+    setUsdcDeposit(value);
+    updateAmount(value, leverage);
+  };
+
+  // Handle amount change
+  const handleAmountChange = (value: number) => {
+    setAmount(value);
+    setUsdcDeposit(value / leverage);
+    setSize(value); // Set size to the new amount
+  };
 
   const onSignAndSubmitTransaction = async () => {
-    if (!account) return; // Check for account
+    if (!account) return;
 
-    // Construct the API URL
-    const apiUrl = `https://perps-tradeapi.kanalabs.io/marketOrder/?marketId=${marketId}&tradeSide=${tradeSide}&direction=${direction}&size=${size}&leverage=${leverage}`;
+    const apiUrl = `https://perps-tradeapi.kanalabs.io/marketOrder/?marketId=${marketId}&tradeSide=${tradeSide}&direction=${direction}&size=${size}&leverage=${leverage}&amount=${amount}`; // Use amount instead of usdcDeposit
 
-    // Fetch market order payload from API
-    const response = await axios.get(apiUrl);
-    const marketOrderPayload = response.data.data; // Extract market order payload
-
-    const transaction: InputTransactionData = {
-      data: {
-        function: marketOrderPayload.function, // Use function from API response
-        typeArguments: marketOrderPayload.typeArguments, // Use typeArguments from API response
-        functionArguments: marketOrderPayload.functionArguments, // Use functionArguments from API response
-      },
-    };
     try {
-      const response = await signAndSubmitTransaction(transaction);
+      const response = await axios.get(apiUrl);
+      if (!response.data.status) {
+        throw new Error(response.data.message);
+      }
+
+      const marketOrderPayload = response.data.data;
+
+      const transaction: InputTransactionData = {
+        data: {
+          function: marketOrderPayload.function,
+          typeArguments: marketOrderPayload.typeArguments,
+          functionArguments: marketOrderPayload.functionArguments,
+        },
+      };
+
+      const txResponse = await signAndSubmitTransaction(transaction);
       await aptosClient(network).waitForTransaction({
-        transactionHash: response.hash,
+        transactionHash: txResponse.hash,
       });
+
       toast({
         title: "Success",
-        description: <TransactionHash hash={response.hash} network={network} />,
+        description: <TransactionHash hash={txResponse.hash} network={network} />,
       });
-      fetchBalances(); // Refresh balances after successful transaction
-    } catch (error) {
+
+      fetchBalances();
+    } catch (error: any) {
       console.error(error);
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 
@@ -62,12 +94,35 @@ export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fet
         <CardTitle>Market Order</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-4">
-        <label>Size:</label>
-        <input type="number" value={size} onChange={(e) => setSize(Number(e.target.value))} />
-        
-        <label>Leverage:</label>
-        <input type="number" value={leverage} onChange={(e) => setLeverage(Number(e.target.value))} />
-        
+        <label>USDC Deposit:</label>
+        <input
+          type="number"
+          value={usdcDeposit}
+          onChange={(e) => handleUsdcChange(Number(e.target.value))}
+          className="w-24" // Adjust the width to make the input smaller
+        />
+
+        <label>Leverage: {leverage}x</label> {/* Display the leverage value */}
+        <Slider
+          min={1}
+          max={20}
+          value={[leverage]} // Pass leverage as an array
+          onValueChange={(value) => {
+            const newLeverage = value[0]; // Extract the first value from the array
+            setLeverage(newLeverage);
+            updateAmount(usdcDeposit, newLeverage);
+          }}
+          className="w-40" // Adjust the width to make the slider smaller
+        />
+
+        <label>Amount:</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => handleAmountChange(Number(e.target.value))}
+          className="w-24" // Adjust the width to make the input smaller
+        />
+
         <label>
           Trade Side:
           <select value={tradeSide.toString()} onChange={(e) => setTradeSide(e.target.value === 'true')}>

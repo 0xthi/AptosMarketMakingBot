@@ -22,7 +22,7 @@ export function Deposit({ marketId, fetchBalances }: { marketId: number; fetchBa
 
   const onSignAndSubmitTransaction = async () => {
     if (!account || !amount) return; // Check for amount
-    const totalAmount = amount * 100000000; // Multiply amount by 100000000
+    const totalAmount = amount * 1000000; // Multiply amount by 100000000
 
     // Fetch deposit payload from API
     const response = await axios.get(`https://perps-tradeapi.kanalabs.io/deposit/?marketId=${marketId}&amount=${totalAmount}`);

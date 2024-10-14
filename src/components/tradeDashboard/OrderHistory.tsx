@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from '../ui/table'; 
 import { Typography } from '@mui/material';
 import { Badge } from '../ui/badge'; // Importing Badge component
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { useToast } from "../ui/use-toast"; // Import useToast
 
 interface OrderHistoryProps {
   marketId: number;
@@ -11,6 +12,7 @@ interface OrderHistoryProps {
 
 const OrderHistory: React.FC<OrderHistoryProps> = ({ marketId }) => {
   const { account } = useWallet();
+  const { toast } = useToast(); // Initialize toast
   const [orderHistory, setOrderHistory] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,10 +26,21 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ marketId }) => {
         setOrderHistory(data.data);
       } else {
         setError(data.message);
+        toast({
+          title: "Error",
+          description: data.message,
+          variant: "destructive",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching order history:', error);
-      setError('Error fetching order history');
+      const errorMessage = error.response?.data?.message || 'Error fetching order history';
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 

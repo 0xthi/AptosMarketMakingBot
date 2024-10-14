@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import OrderHistory from "@/components/tradeDashboard/OrderHistory"; // Import the OrderHistory component
+import OpenTrades from "@/components/tradeDashboard/OpenTrades"; // Import the OpenTrades component
+import TradingChart from "@/components/tradeDashboard/TradingChart"; // Import the TradingChart component
 
 export default function Home() {
   const { connected, network } = useWallet();
@@ -55,24 +57,31 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col w-full max-w-[1000px] p-4 md:p-6 pb-12 gap-6">
-      <Typography variant="h4" className="text-center mb-4">Market Making Bot</Typography>
-      <div className="flex justify-between items-center pb-4">
-        <ThemeToggle />
+    <main className="flex flex-col w-full max-w-[1000px] p-4 md:p-6 pb-12 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center pb-2">
+        <WalletSelection />
         <HealthCheck />
       </div>
-      <WalletSelection />
-      {/* {connected && (
-        <SingleSigner />
-      )} */}
+      <div className="flex flex-col md:flex-row justify-between items-start gap-2">
+        <div className="flex flex-col gap-2">
+          {connected && marketId !== null && baseDecimals !== null && (
+            <AccountBalance marketId={marketId} baseDecimals={baseDecimals} />
+          )}
+          {error && <Typography color="error">{error}</Typography>}
+        </div>
+        <div className="flex flex-col items-end">
+          <ThemeToggle />
+        </div>
+      </div>
       {connected && marketId !== null && (
-        <Deposit marketId={marketId} fetchBalances={fetchBalances} />
-      )}
-      {connected && marketId !== null && (
-        <Withdraw marketId={marketId} fetchBalances={fetchBalances} />
-      )}
-      {connected && marketId !== null && (
-        <MarketOrder marketId={marketId} fetchBalances={fetchBalances} />
+        <>
+          <Deposit marketId={marketId} fetchBalances={fetchBalances} />
+          <Withdraw marketId={marketId} fetchBalances={fetchBalances} />
+          <MarketOrder marketId={marketId} fetchBalances={fetchBalances} />
+          <OrderHistory marketId={marketId} />
+          <OpenTrades marketId={marketId} />
+          <TradingChart />
+        </>
       )}
       {connected && isMainnet(connected, network?.name) && (
         <Alert variant="warning">
@@ -83,13 +92,6 @@ export default function Home() {
           </AlertDescription>
         </Alert>
       )}
-      {connected && marketId !== null && baseDecimals !== null && (
-        <AccountBalance marketId={marketId} baseDecimals={baseDecimals} />
-      )}
-      {error && <Typography color="error">{error}</Typography>}
-      {connected && marketId !== null && (
-        <OrderHistory marketId={marketId} /> // Add OrderHistory component
-      )}
     </main>
   );
 }
@@ -97,11 +99,8 @@ export default function Home() {
 function WalletSelection() {
   const { autoConnect, setAutoConnect } = useAutoConnect(); 
   return (
-    <div className="flex flex-col md:flex-row gap-6 pt-6 pb-12 justify-between items-center">
-      <div className="flex flex-col gap-4 items-center w-full md:w-auto">
-        <div className="text-sm text-muted-foreground">shadcn/ui</div>
-        <ShadcnWalletSelector />
-      </div>
+    <div className="flex flex-col md:flex-row gap-4 pt-4 pb-4 justify-between items-center">
+      <ShadcnWalletSelector />
       <label className="flex items-center gap-4 cursor-pointer">
         <Switch
           id="auto-connect-switch"

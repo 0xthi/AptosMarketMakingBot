@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"; // Assuming you have a utility for class names
 
 const APIHealth: React.FC = () => {
   const [status, setStatus] = useState<'OK' | 'ERROR' | 'LOADING'>('LOADING');
-  const { toast } = useToast();
+  const { toast } = useToast(); // Initialize toast
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -19,16 +19,16 @@ const APIHealth: React.FC = () => {
         const newStatus = data.status ? 'OK' : 'ERROR';
         setStatus(newStatus);
 
-        // Optional toast notifications
         if (newStatus === 'OK') {
-          toast({ title: "API is healthy!", description: "All systems operational.", variant: "default" }); // Changed "success" to "default"
+          toast({ title: "API is healthy!", description: "All systems operational.", variant: "default" });
         } else {
           toast({ title: "API is down!", description: "Please check the service.", variant: "destructive" });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching health status:', error);
         setStatus('ERROR');
-        toast({ title: "Error fetching health status!", description: "Please try again later.", variant: "destructive" });
+        const errorMessage = error.response?.data?.message || "Please try again later.";
+        toast({ title: "Error fetching health status!", description: errorMessage, variant: "destructive" });
       }
     };
 
@@ -41,7 +41,7 @@ const APIHealth: React.FC = () => {
         className={cn("rounded-full", {
           "bg-green-500": status === 'OK',
           "bg-red-500": status === 'ERROR',
-          "animate-pulse": true, // Add a pulsing animation
+          "animate-pulse": true,
         })}
         style={{
           width: 12,
