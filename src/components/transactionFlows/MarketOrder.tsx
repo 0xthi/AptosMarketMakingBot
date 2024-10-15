@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Slider } from "../ui/slider"; // Import the Slider component
 // import OpenTrades from "../tradeDashboard/OpenTrades"; // Adjust the import path as necessary
 
-export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fetchBalances: () => void }) {
+export function MarketOrder({ marketId, fetchBalances, fetchOrderHistory }: { marketId: number; fetchBalances: () => void; fetchOrderHistory: () => void; }) {
   const { toast } = useToast();
   const {
     connected,
@@ -116,7 +116,11 @@ export function MarketOrder({ marketId, fetchBalances }: { marketId: number; fet
         description: <TransactionHash hash={txResponse.hash} network={network} />,
       });
 
-      fetchBalances();
+      // Wait for 5 seconds before refreshing balances and order history
+      setTimeout(() => {
+        fetchBalances(); // Refresh balances after successful transaction
+        fetchOrderHistory(); // Refresh order history after successful transaction
+      }, 5000);
     } catch (error: any) {
       console.error(error);
       const errorMessage = error.response?.data?.message || error.message || "An error occurred";

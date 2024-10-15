@@ -48,7 +48,11 @@ export function Withdraw({ marketId, fetchBalances }: { marketId: number; fetchB
         title: "Success",
         description: <TransactionHash hash={response.hash} network={network} />,
       });
-      fetchBalances();
+
+      // Wait for 3 seconds before refreshing balances
+      setTimeout(() => {
+        fetchBalances();
+      }, 3000);
     } catch (error) {
       console.error(error);
     }
@@ -68,8 +72,9 @@ export function Withdraw({ marketId, fetchBalances }: { marketId: number; fetchB
           type="number"
           placeholder="Amount" 
           value={amount} 
-          onChange={(e) => setAmount(Number(e.target.value))}
+          onChange={(e) => setAmount(Math.floor(Number(e.target.value)))}
           className="border p-2"
+          min="0.01"
         />
         <div>
           <Button onClick={() => incrementAmount(1)}>+1</Button>

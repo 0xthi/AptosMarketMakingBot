@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { useToast } from "../ui/use-toast";
 import { TransactionHash } from "../TransactionHash";
-import { useState, useEffect } from "react"; // Add this import
+import { useState } from "react"; // Add this import
 import axios from 'axios'; // Add axios for API calls
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose, DialogTrigger } from "../ui/dialog"; // Import Dialog components
 
@@ -27,7 +27,7 @@ export function Deposit({ marketId, fetchBalances }: { marketId: number; fetchBa
 
   const onSignAndSubmitTransaction = async () => {
     if (!account || !amount) return; // Check for amount
-    const totalAmount = amount * 1000000; // Multiply amount by 100000000
+    const totalAmount = amount * 1000000; // Multiply amount by 1000000
 
     // Fetch deposit payload from API
     const response = await axios.get(`https://perps-tradeapi.kanalabs.io/deposit/?marketId=${marketId}&amount=${totalAmount}`);
@@ -49,7 +49,11 @@ export function Deposit({ marketId, fetchBalances }: { marketId: number; fetchBa
         title: "Success",
         description: <TransactionHash hash={response.hash} network={network} />,
       });
-      fetchBalances(); // Refresh balances after successful transaction
+
+      // Wait for 3 seconds before refreshing balances
+      setTimeout(() => {
+        fetchBalances(); // Refresh balances after successful transaction
+      }, 3000);
     } catch (error) {
       console.error(error);
     }
